@@ -1,0 +1,16 @@
+.login-box {
+  width: 100%;
+  max-width: 350px;
+  text-align: center;
+}
+
+.login-title {
+  margin-bottom: 20px;
+}
+
+.switch-text {
+  margin-top: 10px;
+  cursor: pointer;
+  color: var(--subtext);
+  font-size: 14px;
+}

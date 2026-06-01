@@ -1,0 +1,37 @@
+# Python virtual environment
+venv310/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables
+.env
+.env.*
+
+# React / Node
+node_modules/
+
+# Build folders
+dist/
+build/
+
+# Your custom folders
+outputs/
+output/
+storage/
+temp/
+
+# Logs
+*.log
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db

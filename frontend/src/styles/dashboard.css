@@ -1,0 +1,49 @@
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.new-case-btn {
+  width: auto;
+  padding: 10px 16px;
+}
+
+.search-box {
+  margin-bottom: 10px;
+}
+
+.filter-box {
+  margin-bottom: 20px;
+}
+
+/* 🔥 CARD GRID LOOK */
+.case-card {
+  border: 1px solid var(--border);
+  padding: 15px;
+  border-radius: 12px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+  background: #fff;
+}
+
+.case-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.06);
+}
+
+/* 📱 MOBILE */
+@media (max-width: 600px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .new-case-btn {
+    width: 100%;
+  }
+}
