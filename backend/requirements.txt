@@ -135,3 +135,6 @@ ffmpeg-python
 # ==========================================
 
 tqdm
+
+passlib[bcrypt]
+bcrypt

@@ -1,31 +1,60 @@
 const BASE = "http://127.0.0.1:8000";
 
+// const BASE ="";
+
 // const BASE = "https://claim-backend-4xum.onrender.com";
 
 
-export async function register(phone, name) {
-  const res = await fetch(`${BASE}/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      phone_number: phone,
-      name: name
-    })
-  });
+export async function register(
+  phone,
+  name,
+  password,
+  confirmPassword
+) {
 
-  return res.json();
+  const res = await fetch(
+    `${BASE}/auth/register`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        phone_number: phone,
+        name,
+        password,
+        confirm_password: confirmPassword
+      })
+    }
+  );
+
+  const data = await res.json();
+
+  return data;
 }
 
-export async function login(phone) {
-  const res = await fetch(`${BASE}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      phone_number: phone
-    })
-  });
+export async function login(
+  phone,
+  password
+) {
 
-  return res.json();
+  const res = await fetch(
+    `${BASE}/auth/login`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        phone_number: phone,
+        password: password
+      })
+    }
+  );
+
+  const data = await res.json();
+
+  return data;
 }
 
 export async function createCase(data) {

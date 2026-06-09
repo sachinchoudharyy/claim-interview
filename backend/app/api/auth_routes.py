@@ -13,12 +13,13 @@ router = APIRouter(prefix="/auth")
 @router.post("/register")
 def register(data: RegisterRequest):
 
-    user = register_user(
+    result = register_user(
         data.phone_number,
-        data.name
+        data.name,
+        data.password
     )
 
-    return {"user": user}
+    return result
 
 
 @router.post("/send-otp")
@@ -34,4 +35,10 @@ def verifyotp(data: dict):
 # ✅ UPDATED LOGIN ROUTE (NOW VALIDATED)
 @router.post("/login")
 def login(data: LoginRequest):
-    return login_user(data.phone_number)
+
+    result = login_user(
+        data.phone_number,
+        data.password
+    )
+
+    return result

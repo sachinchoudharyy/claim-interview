@@ -203,3 +203,40 @@ video {
   border: 1px solid #eee;
   border-radius: 8px;
 }
+
+/* =========================
+   ACCORDION
+========================= */
+
+.accordion-card {
+  margin-bottom: 16px;
+}
+
+.accordion-card summary {
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 14px;
+  border-radius: 10px;
+  background: #f8fafc;
+  list-style: none;
+}
+
+.accordion-card summary::-webkit-details-marker {
+  display: none;
+}
+
+.accordion-card summary::after {
+  content: "▼";
+  float: right;
+  transition: 0.2s ease;
+}
+
+.accordion-card[open] summary::after {
+  transform: rotate(180deg);
+}
+
+.accordion-content {
+  padding-top: 15px;
+}
+

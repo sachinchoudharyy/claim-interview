@@ -5,6 +5,7 @@ import "../styles/interview.css";
 import { useNavigate } from "react-router-dom";
 
 const BASE = "http://127.0.0.1:8000";
+// const BASE ="";
 // const BASE = "https://claim-backend-4xum.onrender.com";
 
 export default function Interview(props) {

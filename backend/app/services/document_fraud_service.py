@@ -2,6 +2,7 @@ import os
 import uuid
 import tempfile
 import requests
+import fitz
 
 from app.db.supabase_client import supabase
 
@@ -25,7 +26,9 @@ def analyze_document_from_url(file_url: str):
                 "error": "Unable to download document"
             }
 
-        suffix = ".jpg"
+        is_pdf = ".pdf" in file_url.lower()
+
+        suffix = ".pdf" if is_pdf else ".jpg"
 
         if ".png" in file_url.lower():
             suffix = ".png"
@@ -41,10 +44,34 @@ def analyze_document_from_url(file_url: str):
             f.write(response.content)
 
         # ==========================================
-        # RUN PIPELINE
+        # PDF → IMAGE
         # ==========================================
 
-        results = run_pipeline(temp_path)
+        if is_pdf:
+
+            pdf_doc = fitz.open(temp_path)
+
+            page = pdf_doc.load_page(0)
+
+            pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
+
+            image_path = os.path.join(
+                tempfile.gettempdir(),
+                f"{uuid.uuid4().hex}.png"
+            )
+
+            pix.save(image_path)
+
+            pdf_doc.close()
+
+            results = run_pipeline(image_path)
+
+            if os.path.exists(image_path):
+                os.remove(image_path)
+
+        else:
+
+            results = run_pipeline(temp_path)
 
         # ==========================================
         # CLEANUP

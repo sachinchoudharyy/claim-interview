@@ -313,7 +313,10 @@ export default function CaseDetails() {
 
 
           {/* 🧾 CASE INFO */}
-          <div className="section-card case-info">
+          <details className="section-card accordion-card" open>
+            <summary>Case Information</summary>
+
+            <div className="accordion-content">
 
             <p><b>Case ID:</b> {caseData.case_id}</p>
             <p><b>Bagic No:</b> {caseData.bagic_number || "N/A"}</p>
@@ -342,10 +345,14 @@ export default function CaseDetails() {
             <p><b>Accused Vehicle:</b> {caseData.accused_vehicle_number || "N/A"}</p>
             <p><b>Victim Vehicle:</b> {caseData.victim_vehicle_number || "N/A"}</p>
 
-          </div>
+            </div>
+          </details>
 
           {/* 🚨 FRAUD SECTION */}
-          <div className="section-card fraud-section">
+          <details className="section-card accordion-card">
+            <summary>Investigation</summary>
+
+            <div className="accordion-content">
 
             <h3>Fraud Identification</h3>
 
@@ -353,68 +360,344 @@ export default function CaseDetails() {
             <p><b>Reason:</b> {caseData.fraud_reason || "N/A"}</p>
             <p><b>Evidence:</b> {caseData.fraud_evidence || "N/A"}</p>
 
-          </div>
-
-          {/* ✏️ UPDATE CASE */}
-          <div className="section-card update-section">
-
-            <h3>Update Case</h3>
-
-            <label>Status:</label>
-            <select value={caseStatus} onChange={(e) => setCaseStatus(e.target.value)}>
-              <option value="pending">Pending</option>
-              <option value="in_progress">In Progress</option>
-              <option value="completed">Completed</option>
-              <option value="fraud">Fraud</option>
-            </select>
-
-            <label>Fraud:</label>
-            <select value={fraudFlag} onChange={(e) => setFraudFlag(e.target.value)}>
-              <option value="">Select</option>
-              <option value="yes">Yes</option>
-              <option value="no">No</option>
-              <option value="suspected">Suspected</option>
-            </select>
-
-            <input
-              type="text"
-              placeholder="Fraud Reason"
-              value={fraudReason}
-              onChange={(e) => setFraudReason(e.target.value)}
-            />
-
-            <input
-              type="text"
-              placeholder="Fraud Evidence"
-              value={fraudEvidence}
-              onChange={(e) => setFraudEvidence(e.target.value)}
-            />
-
-            <button onClick={handleUpdate}>
-              Save Changes
-            </button>
-
-          </div>
-
-          {caseData.claim_type === "motor" && (
-            <div style={{ marginBottom: "15px" }}>
-              <label>Select Subcategory:</label>
-
-              <select
-                value={subcategory}
-                onChange={(e) => setSubcategory((e.target.value || "").trim())}
-              >
-                <option value="">Select</option>
-
-                {motorCategories.map((cat, i) => (
-                  <option key={i} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
             </div>
-          )}
 
+            {/* ✏️ UPDATE CASE */}
+            <div className="section-card update-section">
+
+              <h3>Update Case</h3>
+
+              <label>Status:</label>
+              <select value={caseStatus} onChange={(e) => setCaseStatus(e.target.value)}>
+                <option value="pending">Pending</option>
+                <option value="in_progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="fraud">Fraud</option>
+              </select>
+
+              <label>Fraud:</label>
+              <select value={fraudFlag} onChange={(e) => setFraudFlag(e.target.value)}>
+                <option value="">Select</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+                <option value="suspected">Suspected</option>
+              </select>
+
+              <input
+                type="text"
+                placeholder="Fraud Reason"
+                value={fraudReason}
+                onChange={(e) => setFraudReason(e.target.value)}
+              />
+
+              <input
+                type="text"
+                placeholder="Fraud Evidence"
+                value={fraudEvidence}
+                onChange={(e) => setFraudEvidence(e.target.value)}
+              />
+
+              <button onClick={handleUpdate}>
+                Save Changes
+              </button>
+
+            </div>
+          </details>
+
+          
+
+
+          
+
+
+          <details className="section-card accordion-card">
+            <summary>Interviews & Evidence</summary>
+
+            <div className="accordion-content">
+
+              {caseData.claim_type === "motor" && (
+                <div style={{ marginBottom: "15px" }}>
+                  <label>Select Subcategory:</label>
+
+                  <select
+                    value={subcategory}
+                    onChange={(e) => setSubcategory((e.target.value || "").trim())}
+                  >
+                    <option value="">Select</option>
+
+                    {motorCategories.map((cat, i) => (
+                      <option key={i} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+
+
+              {/* 🎥 VIDEO SECTION */}
+              <h3>Videos</h3>
+              <div className="section-card">
+
+              {videos.length === 0 && <p>No videos available</p>}
+
+              {videos.length > 0 && (
+                <div className="video-carousel">
+
+                  <button className="nav-btn" onClick={() =>
+                    setCurrentVideo(prev => prev === 0 ? videos.length - 1 : prev - 1)
+                  }>◀</button>
+
+                  <div className="video-wrapper">
+                    <video key={currentVideo} controls>
+                      <source src={videos[currentVideo]?.video_url} type="video/webm" />
+                    </video>
+
+                    {isProcessing && !videos[currentVideo]?.fraud_result && (
+                      <div style={{
+                        marginTop: "10px",
+                        padding: "10px",
+                        borderRadius: "8px",
+                        background: "#fff3cd",
+                        color: "#856404",
+                        fontSize: "14px"
+                      }}>
+                        ⏳ Processing  results... Please wait
+                      </div>
+                    )}
+
+                    {videos[currentVideo]?.liveness_result && (
+                      <div style={{
+                        marginTop: "10px",
+                        padding: "10px",
+                        borderRadius: "8px",
+                        background: "#f1f5f9",
+                        fontSize: "14px"
+                      }}>
+                        <b>Status:</b> {videos[currentVideo].liveness_result.status} <br />
+                        <b>Confidence:</b> {videos[currentVideo].liveness_result.confidence} <br />
+                        <b>Liveness:</b> {
+                          (() => {
+                            const lr = videos[currentVideo].liveness_result;
+                            const parsed = typeof lr === "string" ? JSON.parse(lr) : lr;
+                            return parsed?.liveness ? "Live" : "Spoof";
+                          })()
+                        }
+                      </div>
+                    )}
+
+                    {videos[currentVideo]?.audio_result && (() => {
+                      const ar = videos[currentVideo].audio_result;
+                      const parsed = typeof ar === "string" ? JSON.parse(ar) : ar;
+
+                      return (
+                        <div style={{
+                          marginTop: "10px",
+                          padding: "10px",
+                          borderRadius: "8px",
+                          background: "#eef6ff",
+                          fontSize: "14px"
+                        }}>
+                          <b>Trust Score:</b> {parsed?.trust_score} <br />
+                          <b>Stress:</b> {parsed?.stress} <br />
+                          <b>Hesitation:</b> {parsed?.hesitation}
+                        </div>
+                      );
+                    })()}
+
+                    {videos[currentVideo]?.fraud_result && (() => {
+                      const fr = videos[currentVideo].fraud_result;
+                      const parsed = typeof fr === "string" ? JSON.parse(fr) : fr;
+
+                      const riskColor =
+                        parsed?.risk === "Low Risk" ? "#16a34a" :
+                        parsed?.risk === "Medium Risk" ? "#eab308" :
+                        "#dc2626";
+
+                      return (
+                        <div style={{
+                          marginTop: "10px",
+                          padding: "12px",
+                          borderRadius: "10px",
+                          background: "#fef3c7",
+                          fontSize: "15px",
+                          fontWeight: "500"
+                        }}>
+                          <b>Fraud Score:</b> {parsed?.fraud_score} <br />
+                          <b style={{ color: riskColor }}>
+                            Risk: {parsed?.risk}
+                          </b>
+                        </div>
+                      );
+                    })()}
+
+                    <p className="video-index">
+                      {currentVideo + 1} / {videos.length}
+                    </p>
+                  </div>
+
+                  <button className="nav-btn" onClick={() =>
+                    setCurrentVideo(prev => prev === videos.length - 1 ? 0 : prev + 1)
+                  }>▶</button>
+
+                </div>
+              )}
+              </div>
+
+              {/* 🧾 INTERVIEWS */}
+              <h3>Interview Transcript</h3>
+
+              {interviews.length === 0 && <p>No interviews</p>}
+
+              <div className="interview-list">
+                {interviews.map((intv, idx) => (
+                  <div key={idx} className="interview-card">
+
+                    <div className="interview-header">
+                      <span>Interview #{idx + 1}</span>
+                      <span className="status">{intv.status}</span>
+                    </div>
+
+                    <p className="location">
+                      📍 {intv.location_text || "N/A"}
+                    </p>
+
+                    <div className="transcript-box">
+
+                      {editingIndex === idx ? (
+                        <>
+                          <textarea
+                            value={editedTranscript}
+                            onChange={(e) => setEditedTranscript(e.target.value)}
+                            rows={5}
+                          />
+
+                          <button
+                            onClick={async () => {
+                              const res = await updateInterview(intv.id, {
+                                full_transcript: editedTranscript
+                              });
+
+                              if (res.message) {
+                                alert("Transcript updated ✅");
+                                setEditingIndex(null);
+                                loadData(); // refresh
+                              } else {
+                                alert("Update failed ❌");
+                              }
+                            }}
+                          >
+                            Save
+                          </button>
+
+                          <button onClick={() => setEditingIndex(null)}>
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          {intv.full_transcript || "No transcript"}
+
+                          <button
+                            onClick={() => {
+                              setEditingIndex(idx);
+                              setEditedTranscript(intv.full_transcript || "");
+                            }}
+                          >
+                            Edit
+                          </button>
+                        </>
+                      )}
+
+                    </div>
+
+                    {intv.qa_script && (
+                      <div className="qa-box">
+                        <b>Q&A:</b>
+
+                        {(() => {
+                          try {
+                            let text = intv.qa_script;
+                            if (text.includes("[")) {
+                              text = text.substring(text.indexOf("["));
+                            }
+
+                            const parsed = JSON.parse(text);
+
+                            if (Array.isArray(parsed)) {
+                              return parsed.map((q, i) => (
+                                <div key={i}>
+                                  <p><b>Q:</b> {q.question}</p>
+                                  <p><b>A:</b> {q.answer}</p>
+                                </div>
+                              ));
+                            }
+
+                            return <p>No valid Q&A</p>;
+
+                          } catch {
+                            return <p>No valid Q&A</p>;
+                          }
+                        })()}
+
+                      </div>
+                    )}
+
+                  </div>
+                ))}
+              </div>
+
+              <h3>Documents</h3>
+
+              {documents.length === 0 && <p>No documents</p>}
+
+              <div className="doc-list">
+                {documents.map((doc, i) => (
+                  <a key={i} href={doc.file_url} target="_blank" rel="noreferrer" className="doc-item">
+                    📄 {doc.file_type}
+                  </a>
+                ))}
+              </div>
+
+              <div style={{ marginTop: "20px" }}>
+
+                <button
+                  onClick={() =>
+                    navigate(`/case/${caseData.case_id}/document-analysis`)
+                  }
+                >
+                  Analyze Documents
+                </button>
+
+              </div>
+
+            </div>
+          </details>
+
+
+          <details className="section-card accordion-card">
+            <summary>Case Timeline</summary>
+
+            <div className="accordion-content">
+
+              {/* 🕒 CASE TIMELINE */}
+              <h3>Case Timeline</h3>
+
+              {logs.length === 0 && <p>No activity yet</p>}
+
+              <div>
+                {Array.isArray(logs) && logs.map((log, i) => (
+                  <div key={i} style={{ marginBottom: "10px" }}>
+                    <p><b>{log.action}</b></p>
+                    <p>{log.description}</p>
+                    <small>{formatToIST(log.created_at)}</small>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+          </details> 
 
           <h3>Remarks</h3>
 
@@ -457,260 +740,7 @@ export default function CaseDetails() {
                 )}
               </div>
             ))}
-          </div>
-
-
-
-          {/* 🎥 VIDEO SECTION */}
-          <h3>Videos</h3>
-          <div className="section-card">
-
-          {videos.length === 0 && <p>No videos available</p>}
-
-          {videos.length > 0 && (
-            <div className="video-carousel">
-
-              <button className="nav-btn" onClick={() =>
-                setCurrentVideo(prev => prev === 0 ? videos.length - 1 : prev - 1)
-              }>◀</button>
-
-              <div className="video-wrapper">
-                <video key={currentVideo} controls>
-                  <source src={videos[currentVideo]?.video_url} type="video/webm" />
-                </video>
-
-                {isProcessing && !videos[currentVideo]?.fraud_result && (
-                  <div style={{
-                    marginTop: "10px",
-                    padding: "10px",
-                    borderRadius: "8px",
-                    background: "#fff3cd",
-                    color: "#856404",
-                    fontSize: "14px"
-                  }}>
-                    ⏳ Processing  results... Please wait
-                  </div>
-                )}
-
-                {videos[currentVideo]?.liveness_result && (
-                  <div style={{
-                    marginTop: "10px",
-                    padding: "10px",
-                    borderRadius: "8px",
-                    background: "#f1f5f9",
-                    fontSize: "14px"
-                  }}>
-                    <b>Status:</b> {videos[currentVideo].liveness_result.status} <br />
-                    <b>Confidence:</b> {videos[currentVideo].liveness_result.confidence} <br />
-                    <b>Liveness:</b> {
-                      (() => {
-                        const lr = videos[currentVideo].liveness_result;
-                        const parsed = typeof lr === "string" ? JSON.parse(lr) : lr;
-                        return parsed?.liveness ? "Live" : "Spoof";
-                      })()
-                    }
-                  </div>
-                )}
-
-                {videos[currentVideo]?.audio_result && (() => {
-                  const ar = videos[currentVideo].audio_result;
-                  const parsed = typeof ar === "string" ? JSON.parse(ar) : ar;
-
-                  return (
-                    <div style={{
-                      marginTop: "10px",
-                      padding: "10px",
-                      borderRadius: "8px",
-                      background: "#eef6ff",
-                      fontSize: "14px"
-                    }}>
-                      <b>Trust Score:</b> {parsed?.trust_score} <br />
-                      <b>Stress:</b> {parsed?.stress} <br />
-                      <b>Hesitation:</b> {parsed?.hesitation}
-                    </div>
-                  );
-                })()}
-
-                {videos[currentVideo]?.fraud_result && (() => {
-                  const fr = videos[currentVideo].fraud_result;
-                  const parsed = typeof fr === "string" ? JSON.parse(fr) : fr;
-
-                  const riskColor =
-                    parsed?.risk === "Low Risk" ? "#16a34a" :
-                    parsed?.risk === "Medium Risk" ? "#eab308" :
-                    "#dc2626";
-
-                  return (
-                    <div style={{
-                      marginTop: "10px",
-                      padding: "12px",
-                      borderRadius: "10px",
-                      background: "#fef3c7",
-                      fontSize: "15px",
-                      fontWeight: "500"
-                    }}>
-                      <b>Fraud Score:</b> {parsed?.fraud_score} <br />
-                      <b style={{ color: riskColor }}>
-                        Risk: {parsed?.risk}
-                      </b>
-                    </div>
-                  );
-                })()}
-
-                <p className="video-index">
-                  {currentVideo + 1} / {videos.length}
-                </p>
-              </div>
-
-              <button className="nav-btn" onClick={() =>
-                setCurrentVideo(prev => prev === videos.length - 1 ? 0 : prev + 1)
-              }>▶</button>
-
-            </div>
-          )}
-          </div>
-
-          {/* 🧾 INTERVIEWS */}
-          <h3>Interview Transcript</h3>
-
-          {interviews.length === 0 && <p>No interviews</p>}
-
-          <div className="interview-list">
-            {interviews.map((intv, idx) => (
-              <div key={idx} className="interview-card">
-
-                <div className="interview-header">
-                  <span>Interview #{idx + 1}</span>
-                  <span className="status">{intv.status}</span>
-                </div>
-
-                <p className="location">
-                  📍 {intv.location_text || "N/A"}
-                </p>
-
-                <div className="transcript-box">
-
-                  {editingIndex === idx ? (
-                    <>
-                      <textarea
-                        value={editedTranscript}
-                        onChange={(e) => setEditedTranscript(e.target.value)}
-                        rows={5}
-                      />
-
-                      <button
-                        onClick={async () => {
-                          const res = await updateInterview(intv.id, {
-                            full_transcript: editedTranscript
-                          });
-
-                          if (res.message) {
-                            alert("Transcript updated ✅");
-                            setEditingIndex(null);
-                            loadData(); // refresh
-                          } else {
-                            alert("Update failed ❌");
-                          }
-                        }}
-                      >
-                        Save
-                      </button>
-
-                      <button onClick={() => setEditingIndex(null)}>
-                        Cancel
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      {intv.full_transcript || "No transcript"}
-
-                      <button
-                        onClick={() => {
-                          setEditingIndex(idx);
-                          setEditedTranscript(intv.full_transcript || "");
-                        }}
-                      >
-                        Edit
-                      </button>
-                    </>
-                  )}
-
-                </div>
-
-                {intv.qa_script && (
-                  <div className="qa-box">
-                    <b>Q&A:</b>
-
-                    {(() => {
-                      try {
-                        let text = intv.qa_script;
-                        if (text.includes("[")) {
-                          text = text.substring(text.indexOf("["));
-                        }
-
-                        const parsed = JSON.parse(text);
-
-                        if (Array.isArray(parsed)) {
-                          return parsed.map((q, i) => (
-                            <div key={i}>
-                              <p><b>Q:</b> {q.question}</p>
-                              <p><b>A:</b> {q.answer}</p>
-                            </div>
-                          ));
-                        }
-
-                        return <p>No valid Q&A</p>;
-
-                      } catch {
-                        return <p>No valid Q&A</p>;
-                      }
-                    })()}
-
-                  </div>
-                )}
-
-              </div>
-            ))}
-          </div>
-
-          <h3>Documents</h3>
-
-          {documents.length === 0 && <p>No documents</p>}
-
-          <div className="doc-list">
-            {documents.map((doc, i) => (
-              <a key={i} href={doc.file_url} target="_blank" rel="noreferrer" className="doc-item">
-                📄 {doc.file_type}
-              </a>
-            ))}
-          </div>
-
-          <div style={{ marginTop: "20px" }}>
-
-            <button
-              onClick={() =>
-                navigate(`/case/${caseData.case_id}/document-analysis`)
-              }
-            >
-              Analyze Documents
-            </button>
-
-          </div>
-
-          {/* 🕒 CASE TIMELINE */}
-          <h3>Case Timeline</h3>
-
-          {logs.length === 0 && <p>No activity yet</p>}
-
-          <div>
-            {Array.isArray(logs) && logs.map((log, i) => (
-              <div key={i} style={{ marginBottom: "10px" }}>
-                <p><b>{log.action}</b></p>
-                <p>{log.description}</p>
-                <small>{formatToIST(log.created_at)}</small>
-              </div>
-            ))}
-          </div>
+          </div> 
 
           {/* 🔘 ACTION BUTTONS */}
           <div className="section-card case-actions">
@@ -724,7 +754,7 @@ export default function CaseDetails() {
               className="secondary-btn"
               onClick={() => setShowRemarkModal(true)}
             >
-              Remarks
+              Add Remarks
             </button>
 
             <button onClick={() => fileInputRef.current.click()}>

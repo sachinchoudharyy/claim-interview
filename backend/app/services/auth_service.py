@@ -1,28 +1,67 @@
 import random
 from datetime import datetime, timedelta
 from app.db.supabase_client import supabase
-from app.core.security import create_token
+from app.core.security import (
+    create_token,
+    hash_password,
+    verify_password
+)
 
 from app.services.case_service import auto_assign_cases_to_user
 
 from app.services.case_log_service import log_case_event
 
 # ---------------- REGISTER ----------------
-def register_user(phone_number, name):
+def register_user(
+    phone_number,
+    name,
+    password
+):
+    if len(phone_number) != 10:
+        return {
+            "error": "Phone number must be exactly 10 digits"
+        }
 
-    existing = supabase.table("users")\
-        .select("*")\
-        .eq("phone_number", phone_number)\
+    if not phone_number.isdigit():
+        return {
+            "error": "Phone number must contain only digits"
+        }
+
+    if len(password) < 8:
+        return {
+            "error": "Password must be at least 8 characters"
+        }
+
+    if len(name.strip()) < 2:
+        return {
+            "error": "Name is too short"
+        }
+
+    existing = (
+        supabase
+        .table("users")
+        .select("*")
+        .eq("phone_number", phone_number)
         .execute()
+    )
 
     if existing.data:
-        return existing.data[0]
 
-    result = supabase.table("users").insert({
-        "phone_number": phone_number,
-        "name": name,
-        "role": "investigator"   # ✅ DEFAULT ROLE
-    }).execute()
+        return {
+            "error": "Phone number already registered"
+        }
+
+    result = (
+        supabase
+        .table("users")
+        .insert({
+            "phone_number": phone_number,
+            "name": name,
+            "password_hash": hash_password(password),
+            "role": "investigator"
+        })
+        .execute()
+    )
 
     return result.data[0]
 
@@ -90,60 +129,49 @@ def verify_otp(phone_number, otp):
 
 
 # ---------------- LOGIN (NEW) ----------------
-def login_user(phone_number):
+def login_user(
+    phone_number,
+    password
+):
 
-    result = supabase.table("users") \
-        .select("*") \
-        .eq("phone_number", phone_number) \
+    result = (
+        supabase
+        .table("users")
+        .select("*")
+        .eq("phone_number", phone_number)
         .execute()
+    )
 
     if not result.data:
-        return {"error": "User not found"}
+
+        return {
+            "error": "Phone number not registered"
+        }
 
     user = result.data[0]
-    if not user.get("role"):
-     user["role"] = "investigator"
 
-    # 🔥 SAFE AUTO ASSIGN (NON-BREAKING)
-    try:
-        user_name = (user.get("name") or "").strip().lower()
+    password_hash = user.get(
+        "password_hash"
+    )
 
-        if user_name:
-            cases = supabase.table("cases") \
-                .select("id, investigator_name, assigned_user_id") \
-                .is_("assigned_user_id", None) \
-                .execute()
+    if not password_hash:
 
-            updated_count = 0
+        return {
+            "error": "User password not configured"
+        }
 
-            for case in cases.data:
-                inv_name = case.get("investigator_name")
+    if not verify_password(
+        password,
+        password_hash
+    ):
 
-                if not inv_name:
-                    continue
+        return {
+            "error": "Incorrect password"
+        }
 
-                if inv_name.strip().lower() == user_name:
-                    supabase.table("cases") \
-                        .update({"assigned_user_id": user["id"]}) \
-                        .eq("id", case["id"]) \
-                        .execute()
-
-                    # ✅ NEW LOG (SAFE)
-                    log_case_event(
-                        case["id"],
-                        "CASE_ASSIGNED",
-                        f"Assigned to {user['name']}",
-                        user["name"]
-                    )
-
-                    updated_count += 1
-
-            print(f"✅ AUTO-ASSIGNED CASES: {updated_count}")
-
-    except Exception as e:
-        print("❌ Auto-assign error:", e)
-
-    token = create_token(user["id"])
+    token = create_token(
+        user["id"]
+    )
 
     return {
         "user": user,

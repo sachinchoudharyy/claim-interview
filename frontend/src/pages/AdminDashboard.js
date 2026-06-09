@@ -224,9 +224,9 @@ export default function AdminDashboard() {
                   <span className="badge">{c.claim_type}</span>
                 </div>
 
-                <p>👤 {c.investigator_name || "Unassigned"}</p>
-                <p>📍 {c.district || "N/A"}</p>
-                <p>🏢 {c.police_station || "N/A"}</p>
+                <p> {c.investigator_name || "Unassigned"}</p>
+                <p> {c.district || "N/A"}</p>
+                <p> {c.police_station || "N/A"}</p>
               </div>
             ))}
 
