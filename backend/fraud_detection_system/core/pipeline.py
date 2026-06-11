@@ -14,9 +14,7 @@ from fraud_detection_system.modules.ela.detector import (
     run_ela_detection
 )
 
-from fraud_detection_system.modules.mantranet.inference import (
-    run_mantranet_detection
-)
+
 
 from fraud_detection_system.modules.copy_move.detector import (
     run_copy_move_detection
@@ -62,9 +60,7 @@ def run_pipeline(image_path):
             image_path
         )
 
-        mantranet_result = run_mantranet_detection(
-            image_path
-        )
+        
 
         copy_move_result = run_copy_move_detection(
             image_path
@@ -86,7 +82,7 @@ def run_pipeline(image_path):
 
             "ela": ela_result,
 
-            "mantranet": mantranet_result,
+            
 
             "copy_move": copy_move_result,
 

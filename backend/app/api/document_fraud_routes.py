@@ -38,7 +38,7 @@ def analyze_document(document_id: str):
         # ==========================================
 
         result = analyze_document_from_url(
-            file_url
+            document
         )
 
         return result

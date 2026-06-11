@@ -241,7 +241,17 @@ export async function updateRemark(remarkId, data) {
   return res.json();
 }
 
+export async function analyzeStatement(documentId) {
 
+  const res = await fetch(
+    `${BASE}/statement-analysis/analyze/${documentId}`,
+    {
+      method: "POST"
+    }
+  );
+
+  return res.json();
+}
 
 
 // export async function sendOtp(phone) {

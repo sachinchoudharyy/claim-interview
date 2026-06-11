@@ -70,6 +70,11 @@ export default function DocumentAnalysis() {
         `http://localhost:8000/document-fraud/analyze/${selectedDoc.id}`
       );
 
+      console.log(
+        "ANALYSIS RESPONSE:",
+        res.data
+      );
+
       setResults(res.data);
 
     } catch (e) {
@@ -147,6 +152,7 @@ export default function DocumentAnalysis() {
           {/* RESULTS */}
           {/* ================================= */}
 
+
           {results?.success && (
 
             <div className="analysis-results">
@@ -190,6 +196,50 @@ export default function DocumentAnalysis() {
                 </p>
 
               </div>
+
+              {results?.modules?.face_verification && (
+
+                <div className="result-card">
+
+                  <h4>
+                    Face Verification
+                  </h4>
+
+                  <p>
+
+                    <strong>
+                      Match Score:
+                    </strong>
+
+                    {" "}
+
+                    {
+                      results.modules
+                        .face_verification
+                        .score
+                    }%
+
+                  </p>
+
+                  <p>
+
+                    <strong>
+                      Status:
+                    </strong>
+
+                    {" "}
+
+                    {
+                      results.modules
+                        .face_verification
+                        .status
+                    }
+
+                  </p>
+
+                </div>
+
+              )}
 
               {/* ================================= */}
               {/* METADATA */}
@@ -293,58 +343,6 @@ export default function DocumentAnalysis() {
               {/* MANTRANET */}
               {/* ================================= */}
 
-              <div className="result-card">
-
-                <h4>ManTraNet</h4>
-
-                <p>
-                  Score:
-                  {results.modules.mantranet.score}
-                </p>
-
-                <p>
-                  Verdict:
-                  {results.modules.mantranet.verdict}
-                </p>
-
-                <div className="image-grid">
-
-                  <div>
-
-                    <h5>Heatmap</h5>
-
-                    <img
-                      src={`http://localhost:8000${results.modules.mantranet.images.heatmap}`}
-                      alt=""
-                    />
-
-                  </div>
-
-                  <div>
-
-                    <h5>Mask</h5>
-
-                    <img
-                      src={`http://localhost:8000${results.modules.mantranet.images.mask}`}
-                      alt=""
-                    />
-
-                  </div>
-
-                  <div>
-
-                    <h5>Overlay</h5>
-
-                    <img
-                      src={`http://localhost:8000${results.modules.mantranet.images.overlay}`}
-                      alt=""
-                    />
-
-                  </div>
-
-                </div>
-
-              </div>
 
               {/* ================================= */}
               {/* COPY MOVE */}

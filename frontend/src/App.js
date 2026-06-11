@@ -10,6 +10,7 @@ import CaseDetails from "./pages/CaseDetails";
 import AdminDashboard from "./pages/AdminDashboard"; // ✅ NEW
 
 import DocumentAnalysis from "./pages/DocumentAnalysis";
+import StatementAnalysis from "./pages/StatementAnalysis";
 
 export default function App() {
 
@@ -37,6 +38,10 @@ export default function App() {
       <Route
         path="/case/:id/document-analysis"
         element={<DocumentAnalysis />}
+      />
+      <Route
+        path="/case/:id/statement-analysis"
+        element={<StatementAnalysis />}
       />
     </Routes>
   );

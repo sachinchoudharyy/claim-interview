@@ -66,6 +66,9 @@ export default function CaseDetails() {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [showUploadChoice, setShowUploadChoice] = useState(false);
+  const [uploadMode, setUploadMode] = useState("document");
+
   const [currentVideo, setCurrentVideo] = useState(0);
   const fileInputRef = useRef(null);
 
@@ -181,17 +184,42 @@ export default function CaseDetails() {
 
   const handleUpload = async (e) => {
     const file = e.target.files[0];
+
     if (!file) return;
 
-    const form = new FormData();
-    form.append("file", file);
-    form.append("case_id", caseData.case_id);
-    form.append("subcategory", subcategory || "");
+    try {
 
-    await uploadDocument(form);
-    alert("Document uploaded");
+      const form = new FormData();
 
-    loadData();
+      form.append("file", file);
+      form.append("case_id", caseData.case_id);
+      form.append("subcategory", subcategory || "");
+      form.append("upload_mode", uploadMode);
+
+      const res = await uploadDocument(form);
+
+      if (res.error) {
+        alert(res.error);
+        return;
+      }
+
+      alert(
+        uploadMode === "verification_photo"
+          ? "Verification photo uploaded successfully"
+          : "Document uploaded successfully"
+      );
+
+      loadData();
+
+    } catch (err) {
+
+      console.error(err);
+
+      alert("Upload failed");
+
+    }
+
+    e.target.value = "";
   };
 
   const loadUsers = async () => {
@@ -648,6 +676,21 @@ export default function CaseDetails() {
                 ))}
               </div>
 
+              {documents.some(
+                d => d.subcategory === "verification_photo"
+              ) && (
+                <div
+                  style={{
+                    marginBottom: "10px",
+                    padding: "10px",
+                    background: "#dcfce7",
+                    borderRadius: "8px"
+                  }}
+                >
+                  Verification Photo Uploaded ✅
+                </div>
+              )}
+
               <h3>Documents</h3>
 
               {documents.length === 0 && <p>No documents</p>}
@@ -660,14 +703,32 @@ export default function CaseDetails() {
                 ))}
               </div>
 
-              <div style={{ marginTop: "20px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "10px",
+                  flexWrap: "wrap"
+                }}
+              >
 
                 <button
                   onClick={() =>
-                    navigate(`/case/${caseData.case_id}/document-analysis`)
+                    navigate(
+                      `/case/${caseData.case_id}/document-analysis`
+                    )
                   }
                 >
                   Analyze Documents
+                </button>
+
+                <button
+                  onClick={() =>
+                    navigate(
+                      `/case/${caseData.case_id}/statement-analysis`
+                    )
+                  }
+                >
+                  Analyze Statements
                 </button>
 
               </div>
@@ -757,7 +818,9 @@ export default function CaseDetails() {
               Add Remarks
             </button>
 
-            <button onClick={() => fileInputRef.current.click()}>
+            <button
+              onClick={() => setShowUploadChoice(true)}
+            >
               Add Documents
             </button>
 
@@ -817,11 +880,20 @@ export default function CaseDetails() {
             </button>
 
             <input
-              type="file"
               ref={fileInputRef}
+              type="file"
               style={{ display: "none" }}
+              accept={
+                uploadMode === "verification_photo"
+                  ? "image/*"
+                  : "*"
+              }
+              capture={
+                uploadMode === "verification_photo"
+                  ? "user"
+                  : undefined
+              }
               onChange={handleUpload}
-              accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
             />
 
           </div>
@@ -919,6 +991,54 @@ export default function CaseDetails() {
                 </button>
               </div>
             </div>
+          )}
+
+
+          {showUploadChoice && (
+
+            <div className="modal-overlay">
+
+              <div className="modal-box">
+
+                <h3>Select Upload Type</h3>
+
+                <button
+                  onClick={() => {
+
+                    setUploadMode("document");
+
+                    setShowUploadChoice(false);
+
+                    fileInputRef.current.click();
+                  }}
+                >
+                  Upload Document
+                </button>
+
+                <button
+                  onClick={() => {
+
+                    setUploadMode("verification_photo");
+
+                    setShowUploadChoice(false);
+
+                    fileInputRef.current.click();
+                  }}
+                >
+                  Upload Verification Photo
+                </button>
+
+                <button
+                  className="secondary-btn"
+                  onClick={() => setShowUploadChoice(false)}
+                >
+                  Cancel
+                </button>
+
+              </div>
+
+            </div>
+
           )}
 
           

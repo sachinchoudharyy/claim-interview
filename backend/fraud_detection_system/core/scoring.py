@@ -27,13 +27,7 @@ def calculate_final_score(results):
 
         +
 
-        (
-            results["mantranet"]["score"]
-            *
-            FINAL_SCORE_WEIGHTS["mantranet"]
-        )
-
-        +
+        
 
         (
             results["copy_move"]["score"]

@@ -8,7 +8,7 @@ FINAL_SCORE_WEIGHTS = {
 
     "ela": 0.20,
 
-    "mantranet": 0.40,
+
 
     "copy_move": 0.10,
 

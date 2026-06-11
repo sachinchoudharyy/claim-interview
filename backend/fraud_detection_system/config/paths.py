@@ -72,11 +72,7 @@ MODELS_DIR = os.path.join(
     "models"
 )
 
-MANTRANET_MODEL_PATH = os.path.join(
-    MODELS_DIR,
-    "mantranet",
-    "MantraNetv4.pt"
-)
+
 
 IMTFE_MODEL_PATH = os.path.join(
     MODELS_DIR,

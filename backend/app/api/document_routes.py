@@ -15,6 +15,7 @@ async def upload_document(
     case_id: str = Form(...),
     interview_id: str = Form(None),
     subcategory: str = Form(None),  # ✅ ADD
+    upload_mode: str = Form("document"),
     subcategory_detail: str = Form(None),
     
     file: UploadFile = File(...)
@@ -51,6 +52,25 @@ async def upload_document(
             return {"error": "Case not found"}
 
         case_uuid = case.data[0]["id"]
+
+        if upload_mode == "verification_photo":
+
+            existing = (
+                supabase.table("documents")
+                .select("id")
+                .eq("case_id", case_uuid)
+                .eq("subcategory", "verification_photo")
+                .execute()
+            )
+
+            if existing.data:
+
+                return {
+                    "error":
+                    "Verification photo already uploaded for this case"
+                }
+
+            subcategory = "verification_photo"
 
         subcategory = (subcategory or "").strip().lower() or None
         subcategory_detail = (subcategory_detail or "").strip() or None

@@ -2,8 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from fastapi.responses import FileResponse
-
 import os
 
 from app.api.auth_routes import router as auth_router
@@ -15,6 +13,7 @@ from app.api.document_routes import router as document_router
 from app.api.admin_routes import router as admin_router
 
 from app.api.document_fraud_routes import router as document_fraud_router
+from app.api.statement_analysis_routes import router as statement_analysis_router
 
 app = FastAPI()
 
@@ -51,19 +50,7 @@ app.include_router(document_router)
 app.include_router(admin_router, prefix="/admin")
 
 app.include_router(document_fraud_router)
+app.include_router(statement_analysis_router)
 
 from app.api.liveness_routes import router as liveness_router
 app.include_router(liveness_router)
-
-FRONTEND_BUILD = "../frontend/build"
-
-app.mount(
-    "/static",
-    StaticFiles(directory=f"{FRONTEND_BUILD}/static"),
-    name="static"
-)
-
-@app.get("/{full_path:path}")
-async def serve_react(full_path: str):
-    index_path = f"{FRONTEND_BUILD}/index.html"
-    return FileResponse(index_path)
